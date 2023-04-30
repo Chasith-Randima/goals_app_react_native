@@ -1,20 +1,76 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import { useState } from "react";
+import {
+  Button,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import GoalItem from "./components/GoalItem";
+import GoalInput from "./components/GoalInput";
 
 export default function App() {
+  const [currentCourseGoals, setCurrentCourseGoals] = useState([]);
+  const [modelIsVisible, setModelIsVisible] = useState(false);
+
+  const addGoalHandler = (enteredGoalText) => {
+    setCurrentCourseGoals((currentCourseGoals) => [
+      ...currentCourseGoals,
+      enteredGoalText,
+    ]);
+    setModelIsVisible(false);
+  };
+
+  const deleteGoalHandler = (id) => {
+    setCurrentCourseGoals((currentGoals) => {
+      return currentCourseGoals.filter((goal) => goal !== id);
+    });
+  };
+
+  const startAddGoalHandler = () => {
+    setModelIsVisible(true);
+  };
+  const endAddGoalHandler = () => {
+    setModelIsVisible(false);
+  };
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+      <StatusBar style="light" />
+      <View style={styles.appContainer}>
+        <Button
+          title="Add New Goal"
+          color="#5e0acc"
+          onPress={startAddGoalHandler}
+        />
+        <GoalInput
+          onAddGoal={addGoalHandler}
+          visible={modelIsVisible}
+          onCancel={endAddGoalHandler}
+        />
+        <View style={styles.goalsContainer}>
+          <FlatList
+            data={currentCourseGoals}
+            renderItem={(itemData) => (
+              <GoalItem text={itemData.item} onDeleteItem={deleteGoalHandler} />
+            )}
+          />
+        </View>
+      </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  appContainer: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 50,
+    paddingHorizontal: 16,
+  },
+
+  goalsContainer: {
+    flex: 5,
   },
 });
